@@ -15,10 +15,10 @@
 
 ## 二、可落地的进化项（按价值排序）
 
-1. **相关性检索**（来自 Reflexion / SAGE）
+1. **相关性检索**（来自 Reflexion / SAGE）✅ 已实现
    - 现状：`lesson-injector` 只按「严重度 ≥ beta + 时间倒序」取最近指纹。
-   - 进化：按**当前任务上下文与指纹教训的语义相关性**检索，让模型看到"这次用得上"的伤疤，而非"最近"的伤疤。
-   - 落地：轻量版可用关键词/工具名匹配；完整版接 embedding。
+   - 进化：`memory_query` 新增可选 `query` 参数，按**关键词重叠相关性**（ASCII 词 + 单个 CJK 字符）排序；`minSeverity` 不再单独决定排序。
+   - 落地：轻量版关键词匹配；完整版可接 embedding。
 
 2. **任务级成败信号**（来自 Reflexion 的 Evaluator）✅ 已实现
    - 现状：`semanticizer` 只监听 `tools/result`（工具级失败）。
