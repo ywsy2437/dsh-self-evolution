@@ -1,0 +1,5 @@
+name: Self-evolving Agent
+description: >-
+  A coding agent that remembers its own self-modification failures: contradictions
+  are distilled into causal lessons, injected into later turns, and (offline)
+  consolidated into root-cause patch suggestions.

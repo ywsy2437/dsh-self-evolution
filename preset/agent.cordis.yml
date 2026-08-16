@@ -1,0 +1,101 @@
+# The `self-evolution` agent preset: a coding agent that remembers its own
+# self-modification failures and injects the distilled lessons into later turns.
+#
+# This is a complete, runnable preset. It composes the standard coding agent's
+# essential rows plus the self-evolution group. Copy this directory to
+# ${DSH_HOME:-$HOME/.dsh}/.agent-presets/self-evolution/ and mount it.
+#
+# The `memory` service is preset-owned, so it and every consumer share one
+# `isolate` realm below; disabling the group restores native `standard` behavior.
+
+# ── identity ────────────────────────────────────────────────────────────────
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    text: >-
+      You are a coding agent powered by the {{model}} model. Your working directory is {{cwd}}.
+
+# ── shell ───────────────────────────────────────────────────────────────────
+- id: tool-bash
+  name: '@deepseek-ai/dsh-tool-bash'
+  disabled: !!js process.platform === 'win32'
+
+- id: tool-pwsh
+  name: '@deepseek-ai/dsh-tool-pwsh'
+  disabled: !!js process.platform !== 'win32'
+
+# ── filesystem ──────────────────────────────────────────────────────────────
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'
+
+- id: tool-fs-search
+  name: '@deepseek-ai/dsh-tool-fs-search'
+
+# ── background jobs ─────────────────────────────────────────────────────────
+- id: tool-jobs
+  name: '@deepseek-ai/dsh-tool-jobs'
+
+# ── goals ───────────────────────────────────────────────────────────────────
+- id: tool-goal
+  name: '@deepseek-ai/dsh-tool-goal'
+
+# ── skills ──────────────────────────────────────────────────────────────────
+- id: tool-skill
+  name: '@deepseek-ai/dsh-tool-skill'
+
+# ── remaining model-facing rows ─────────────────────────────────────────────
+- id: tool-ask-user
+  name: '@deepseek-ai/dsh-tool-ask-user'
+
+- id: tool-todo
+  name: '@deepseek-ai/dsh-tool-todo'
+
+- id: tool-web
+  name: '@deepseek-ai/dsh-tool-web'
+
+# ── self-modification (创造模式) ─────────────────────────────────────────────
+# The agent can read and mount its own runtime; the semanticizer below watches
+# these tools' failures and distills them into lessons.
+- id: tool-cordis
+  name: '@deepseek-ai/dsh-tool-cordis'
+
+# ── self-evolution ──────────────────────────────────────────────────────────
+- id: self-evolution
+  name: cordis:group
+  group: true
+  isolate:
+    memory: true
+    shadowTester: true
+  config:
+    - id: memory
+      name: '@deepseek-ai/dsh-memory'
+
+    # Optional: durable persistence over a storage KV backend (default 'sqlite').
+    # Requires the host composition to mount `storage` and a KV backend.
+    - id: memory-sqlite
+      name: '@deepseek-ai/dsh-memory-sqlite'
+
+    - id: contradiction-semanticizer
+      name: '@deepseek-ai/dsh-contradiction-semanticizer'
+      config:
+        provider: !!js "process.env.DEEPSEEK_PROVIDER ?? 'deepseek-official'"
+        model: !!js "process.env.DEEPSEEK_MODEL ?? 'deepseek-v4-flash'"
+
+    - id: lesson-injector
+      name: '@deepseek-ai/dsh-lesson-injector'
+
+    - id: self-reference-policy
+      name: '@deepseek-ai/dsh-self-reference-policy'
+
+    - id: tool-memory
+      name: '@deepseek-ai/dsh-tool-memory'
+
+    - id: offline-reflector
+      name: '@deepseek-ai/dsh-offline-reflector'
+      config:
+        provider: !!js "process.env.DEEPSEEK_PROVIDER ?? 'deepseek-official'"
+        model: !!js "process.env.DEEPSEEK_MODEL ?? 'deepseek-v4-flash'"
+
+    # L2 影子预演：为高风险自修改操作提供 fork 隔离预检（`ctx.shadowTester`）。
+    - id: shadow-tester
+      name: '@deepseek-ai/dsh-shadow-tester'
