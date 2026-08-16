@@ -25,7 +25,7 @@
 |---|---|
 | `@deepseek-ai/dsh-memory` | Service Definition（`ctx.memory`）：矛盾指纹 + 元记录 |
 | `@deepseek-ai/dsh-memory-sqlite` | 持久化 provider（storage KV 后端写穿） |
-| `@deepseek-ai/dsh-contradiction-semanticizer` | `tools/result` 失败 → LLM 蒸馏 → 指纹 |
+| `@deepseek-ai/dsh-contradiction-semanticizer` | `tools/result` 失败 → LLM 蒸馏 → 指纹；成功 → 记录 `success`（成功模式库） |
 | `@deepseek-ai/dsh-lesson-injector` | 指纹 → 强制反思 `systemPrompt` 段 |
 | `@deepseek-ai/dsh-self-reference-policy` | `tools/pre-execute` L1/L2/L3 分级 |
 | `@deepseek-ai/dsh-tool-memory` | 模型工具 `memory_query` |

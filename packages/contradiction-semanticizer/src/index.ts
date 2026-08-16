@@ -29,6 +29,8 @@ export interface Config {
   maxLessonWords: number
   /** Only failures of tools whose name starts with this prefix are distilled. */
   selfReferenceToolPrefix: string
+  /** Also record a lightweight `success` record for successful self-referential calls. */
+  recordSuccess: boolean
 }
 
 /** Schemastery configuration for the semanticizer. */
@@ -37,6 +39,7 @@ export const Config: z<Config> = z.object({
   model: z.string().required(),
   maxLessonWords: z.natural().default(50),
   selfReferenceToolPrefix: z.string().default('cordis'),
+  recordSuccess: z.boolean().default(true),
 })
 
 /**
@@ -142,8 +145,12 @@ export function apply(ctx: Context, config: Config): void {
   const memory = ctx.memory
   const llm = ctx.llm
   ctx.on('tools/result', (exec, result) => {
-    if (!result.isError) return
     if (!exec.name.startsWith(config.selfReferenceToolPrefix)) return
-    void distillAndRecord(memory, llm, config, exec.name, result.error.message)
+    if (result.isError) {
+      void distillAndRecord(memory, llm, config, exec.name, result.error.message)
+    } else if (config.recordSuccess) {
+      // Success library (Voyager): remember what worked, not only what broke.
+      memory.record({ type: 'success', payload: { toolName: exec.name }, tags: ['success'] })
+    }
   })
 }

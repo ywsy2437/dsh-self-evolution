@@ -24,9 +24,9 @@
    - 现状：`semanticizer` 只监听 `tools/result`（工具级失败）。
    - 进化：同时监听 `agent/request-error`（模型/传输失败）与 `turn/end` 的 error reason，捕获"没有单点工具失败但任务整体失败"的矛盾。
 
-3. **成功模式库**（来自 Voyager）
+3. **成功模式库**（来自 Voyager）✅ 已实现
    - 现状：只记录 `shadow_failure` / 失败指纹（负样本）。
-   - 进化：新增 `success` 记录类型，沉淀"成功的自修改模式"（正样本），与失败指纹互补，形成双向学习。
+   - 进化：`contradiction-semanticizer` 现在也在自修改操作**成功**时记录一条 `success` 记录（可配 `recordSuccess`，默认开），与失败指纹互补，形成双向学习；经 `memory_query kind='records'` 可查。
 
 4. **深度固化**（来自 ParamMem）
    - 现状：`offline-reflector` 生成补丁建议后仅 `markResolved`，不真正应用。
