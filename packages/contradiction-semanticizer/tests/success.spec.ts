@@ -18,6 +18,8 @@ describe('contradiction-semanticizer success library', () => {
     await ctx.plugin({ name, inject, Config, apply }, {
       provider: 'deepseek-official',
       model: 'deepseek-v4-flash',
+      maxLessonWords: 50,
+      selfReferenceToolPrefix: 'cordis',
       recordSuccess: true,
     })
 
@@ -38,6 +40,8 @@ describe('contradiction-semanticizer success library', () => {
     await ctx.plugin({ name, inject, Config, apply }, {
       provider: 'deepseek-official',
       model: 'deepseek-v4-flash',
+      maxLessonWords: 50,
+      selfReferenceToolPrefix: 'cordis',
       recordSuccess: false,
     })
 

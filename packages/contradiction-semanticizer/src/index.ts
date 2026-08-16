@@ -150,7 +150,16 @@ export function apply(ctx: Context, config: Config): void {
       void distillAndRecord(memory, llm, config, exec.name, result.error.message)
     } else if (config.recordSuccess) {
       // Success library (Voyager): remember what worked, not only what broke.
-      memory.record({ type: 'success', payload: { toolName: exec.name }, tags: ['success'] })
+      // A success pattern MUST carry `failureConditions` (when NOT to reuse it),
+      // otherwise it degrades into an overfitted template.
+      memory.record({
+        type: 'success',
+        payload: {
+          toolName: exec.name,
+          failureConditions: '若目标与本次成功操作不同（pluginId/packageId/参数/上下文不一致），勿复用此成功模式',
+        },
+        tags: ['success'],
+      })
     }
   })
 }

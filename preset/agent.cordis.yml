@@ -99,3 +99,7 @@
     # L2 影子预演：为高风险自修改操作提供 fork 隔离预检（`ctx.shadowTester`）。
     - id: shadow-tester
       name: '@deepseek-ai/dsh-shadow-tester'
+
+    # 任务级三态 evaluator：把每轮任务结局（success/failure/inconclusive）落库。
+    - id: task-evaluator
+      name: '@deepseek-ai/dsh-task-evaluator'

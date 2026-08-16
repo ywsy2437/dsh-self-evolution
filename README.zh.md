@@ -19,7 +19,7 @@
 - **影子预检**：高风险（L2）自修改先在隔离 fork 子代理里预演，失败即 fail-closed。
 - **离线固化**：空闲时批量根因分析，把伤疤固化为可复用的补丁建议。
 
-## 二、包结构（8 个插件）
+## 二、包结构（9 个插件）
 
 | 包 | 角色 |
 |---|---|
@@ -31,6 +31,7 @@
 | `@deepseek-ai/dsh-tool-memory` | 模型工具 `memory_query` |
 | `@deepseek-ai/dsh-offline-reflector` | 定时根因分析 → 补丁建议 |
 | `@deepseek-ai/dsh-shadow-tester` | `ctx.shadowTester`：fork 隔离预检 |
+| `@deepseek-ai/dsh-task-evaluator` | 任务级三态 evaluator（`turn/end` → success/failure/inconclusive） |
 
 ## 三、快速开始
 

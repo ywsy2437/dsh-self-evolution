@@ -20,9 +20,9 @@
    - 进化：按**当前任务上下文与指纹教训的语义相关性**检索，让模型看到"这次用得上"的伤疤，而非"最近"的伤疤。
    - 落地：轻量版可用关键词/工具名匹配；完整版接 embedding。
 
-2. **任务级成败信号**（来自 Reflexion 的 Evaluator）
+2. **任务级成败信号**（来自 Reflexion 的 Evaluator）✅ 已实现
    - 现状：`semanticizer` 只监听 `tools/result`（工具级失败）。
-   - 进化：同时监听 `agent/request-error`（模型/传输失败）与 `turn/end` 的 error reason，捕获"没有单点工具失败但任务整体失败"的矛盾。
+   - 进化：新增 `dsh-task-evaluator`，监听持久 `turn/end` 事件，把每轮任务结局判为 `success`/`failure`/`inconclusive` 并落库（`inconclusive` 是合法终态，不强判）。
 
 3. **成功模式库**（来自 Voyager）✅ 已实现
    - 现状：只记录 `shadow_failure` / 失败指纹（负样本）。
