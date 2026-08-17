@@ -32,6 +32,14 @@
    - 现状：`offline-reflector` 生成补丁建议后仅 `markResolved`，不真正应用。
    - 进化：在安全门控（L1 低风险 + 快照 + 可回滚）下，把固化结果真正写回配置/参数，实现"肌肉记忆"。
 
+5. **教训衰减**（来自 Python 虚拟人脑项目 `plasticity.py` 的 `weight_decay`）⏳ 待办
+   - 现状：记忆有 `occurrenceCount`（重要性）+ `lastOccurrence`（新近度），但无显式衰减——旧教训永远占注入名额。
+   - 进化：`lesson-injector` 按「新近度衰减 × 重要度」加权，久未复用、不严重的教训自动降权/淡出。
+
+6. **蒸馏节流**（来自 Python 虚拟人脑项目 `brain_protection.py` 的速率限制 + 脑脊液过载降级）⏳ 待办
+   - 现状：`semanticizer` 是 fire-and-forget、无限流——agent 疯狂触发自修改失败会无限烧 LLM 蒸馏调用，违背"受控"。
+   - 进化：加节流（每分钟最多 N 次蒸馏）+ 过载时降级（丢弃蒸馏、只落 fallback 教训）。
+
 ## 三、参考链接
 
 - Reflexion: Language Agents with Verbal Reinforcement Learning — <https://arxiv.org/abs/2303.11366>
@@ -40,3 +48,4 @@
 - ACE（Agentic Context Engineering）开源 — <https://sambanova.ai/blog/ace-open-sourced-on-github>
 - Generative Agents: Interactive Simulacra of Human Behavior — <https://arxiv.org/abs/2304.03442>
 - Voyager: An Open-Ended Embodied Agent with LLMs — <https://arxiv.org/abs/2305.16291>
+- Python 虚拟人脑项目（本机 `E:\shanyu\Projects\Python_虚拟人脑项目\virtual_brain\`）：`plasticity.py`（可塑性）、`brain_protection.py`（安全防护）
