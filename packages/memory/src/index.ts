@@ -55,6 +55,45 @@ function nextId(): string {
 }
 
 /**
+ * Tokenize text into lowercase ASCII words plus individual CJK characters, the
+ * same lexing the `memory_query` tool uses, so keyword-overlap relevance is
+ * consistent across active and passive consumers. CJK has no word boundaries, so
+ * each character is a retrieval unit.
+ * @param text - the text to tokenize.
+ * @returns the token set.
+ */
+export function tokenize(text: string): Set<string> {
+  const tokens = new Set<string>()
+  const lower = text.toLowerCase()
+  for (const match of lower.matchAll(/[a-z0-9]+/g)) {
+    tokens.add(match[0])
+  }
+  for (const char of lower) {
+    if (/[\u4e00-\u9fff]/.test(char)) tokens.add(char)
+  }
+  return tokens
+}
+
+/**
+ * Keyword-overlap relevance: the fraction of `query` tokens present in `text`.
+ * Zero when the query has no tokens. A cheap stand-in for embedding similarity,
+ * so passive injection works without any embedding backend.
+ * @param query - the task description / search text.
+ * @param text - the candidate text (lesson, record, …).
+ * @returns a score in `[0, 1]`.
+ */
+export function relevanceScore(query: string, text: string): number {
+  const queryTokens = tokenize(query)
+  if (queryTokens.size === 0) return 0
+  const textTokens = tokenize(text)
+  let overlap = 0
+  for (const token of queryTokens) {
+    if (textTokens.has(token)) overlap += 1
+  }
+  return overlap / queryTokens.size
+}
+
+/**
  * Storage backend for fingerprints and records. The default is in-memory; a
  * persistent provider swaps in a durable implementation.
  */
@@ -163,6 +202,28 @@ export class Memory extends Service {
     return this.store.listFingerprints()
       .filter(fp => severityRank(fp.type) >= floor)
       .sort((a, b) => b.lastOccurrence - a.lastOccurrence)
+      .slice(0, limit)
+  }
+
+  /**
+   * Contradictions relevant to `query`, ranked by keyword-overlap (desc), then
+   * most recent. Only fingerprints with at least one shared query token are
+   * returned, so a zero-overlap task yields an empty result instead of noise.
+   * This is the passive retrieval entrypoint: consumers call it with the claimed
+   * task text to surface only the lessons that bear on the current work.
+   * @param query - the task description to match against.
+   * @param limit - maximum count.
+   * @param minSeverity - lowest severity to include.
+   * @returns the ranked fingerprints with a positive relevance score.
+   */
+  queryRelevantContradictions(query: string, limit: number, minSeverity: ContradictionType): ContradictionFingerprint[] {
+    const floor = severityRank(minSeverity)
+    return this.store.listFingerprints()
+      .filter(fp => severityRank(fp.type) >= floor)
+      .map(fp => ({ fingerprint: fp, score: relevanceScore(query, `${fp.triggerOp} ${fp.semanticLesson}`) }))
+      .filter(entry => entry.score > 0)
+      .sort((a, b) => b.score - a.score || b.fingerprint.lastOccurrence - a.fingerprint.lastOccurrence)
+      .map(entry => entry.fingerprint)
       .slice(0, limit)
   }
 

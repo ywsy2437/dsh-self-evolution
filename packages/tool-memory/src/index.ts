@@ -10,6 +10,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { defineTool } from '@deepseek-ai/dsh-tools'
+import { relevanceScore } from '@deepseek-ai/dsh-memory'
 import type { ContradictionType } from '@deepseek-ai/dsh-memory'
 
 export const name = 'tool-memory'
@@ -25,45 +26,6 @@ export interface Config {
 export const Config: z<Config> = z.object({
   maxResults: z.natural().default(10),
 })
-
-/** Pool size fetched before relevance ranking (so ranking is not starved by recency). */
-const RELEVANCE_POOL = 100
-
-/**
- * Tokenize text into lowercase ASCII words plus individual CJK characters.
- * CJK has no word boundaries, so each character is a retrieval unit.
- * @param text - the text to tokenize.
- * @returns the token set.
- */
-export function tokenize(text: string): Set<string> {
-  const tokens = new Set<string>()
-  const lower = text.toLowerCase()
-  for (const match of lower.matchAll(/[a-z0-9]+/g)) {
-    tokens.add(match[0])
-  }
-  for (const char of lower) {
-    if (/[\u4e00-\u9fff]/.test(char)) tokens.add(char)
-  }
-  return tokens
-}
-
-/**
- * Keyword-overlap relevance: the fraction of query tokens present in the text.
- * Zero when the query has no tokens.
- * @param query - the task description / search text.
- * @param text - the candidate text (lesson, record, …).
- * @returns a score in `[0, 1]`.
- */
-export function relevanceScore(query: string, text: string): number {
-  const q = tokenize(query)
-  if (q.size === 0) return 0
-  const t = tokenize(text)
-  let overlap = 0
-  for (const token of q) {
-    if (t.has(token)) overlap += 1
-  }
-  return overlap / q.size
-}
 
 /**
  * Format one contradiction fingerprint as a single model-facing line.
@@ -133,14 +95,10 @@ export function apply(ctx: Context, config: Config): void {
       const query = args.query ?? ''
       if (args.kind === 'contradictions') {
         const severity = (args.minSeverity ?? 'alpha') as ContradictionType
-        const pool = ctx.memory.queryRecentContradictions(RELEVANCE_POOL, severity)
         const ranked = query.length === 0
-          ? pool
-          : pool
-            .map(f => ({ f, score: relevanceScore(query, `${f.triggerOp} ${f.semanticLesson}`) }))
-            .sort((a, b) => b.score - a.score || b.f.lastOccurrence - a.f.lastOccurrence)
-            .map(x => x.f)
-        return Promise.resolve({ entries: ranked.slice(0, limit).map(formatFingerprint) })
+          ? ctx.memory.queryRecentContradictions(limit, severity)
+          : ctx.memory.queryRelevantContradictions(query, limit, severity)
+        return Promise.resolve({ entries: ranked.map(formatFingerprint) })
       }
       const pool = ctx.memory.listRecords()
       const ranked = query.length === 0

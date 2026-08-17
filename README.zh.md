@@ -4,6 +4,8 @@
 
 > 核心哲学：自指向矛盾不是缺陷，而是 Agent 认知跃迁的"磨刀石"。本方案选择在 Harness 运行时内受控容纳、语义化并转化矛盾为进化信号，让 Agent 具备"应激进化"能力。
 
+> **自进化是核心阵地**：修改自己代码（`cordis_define` / `cordis_run` 等）是 Agent 的第一等权利，而非附属能力；记忆中枢（`ctx.memory`）与被动注入是这块阵地的底层基础设施，让 Agent 在推理过程中**被动地**、无需主动选择地最大化利用自身积累的「伤疤」。
+
 ## 一、核心能力
 
 一条四阶段转化管道：
@@ -16,6 +18,7 @@
 
 - **记住失败**：自修改失败不再静默回滚，而是被蒸馏成一条自然语言"因果教训"。
 - **带着伤疤反思**：教训强制注入后续推理的 SystemPrompt，让 Agent 带着"痛感"重新规划。
+- **被动激活（相关记忆注入）**：不依赖模型主动调用 `memory_query`——`agent/pre-step` 钩子在每次推理推进前按相关性把相关教训被动前置注入，与「强制反思段」形成「常驻近因 + 即时相关」的双层记忆读取。
 - **影子预检**：高风险（L2）自修改先在隔离 fork 子代理里预演，失败即 fail-closed。
 - **离线固化**：空闲时批量根因分析，把伤疤固化为可复用的补丁建议。
 
@@ -26,7 +29,7 @@
 | `@deepseek-ai/dsh-memory` | Service Definition（`ctx.memory`）：矛盾指纹 + 元记录 |
 | `@deepseek-ai/dsh-memory-sqlite` | 持久化 provider（storage KV 后端写穿） |
 | `@deepseek-ai/dsh-contradiction-semanticizer` | `tools/result` 失败 → LLM 蒸馏 → 指纹；成功 → 记录 `success`（成功模式库） |
-| `@deepseek-ai/dsh-lesson-injector` | 指纹 → 强制反思 `systemPrompt` 段 |
+| `@deepseek-ai/dsh-lesson-injector` | 指纹 → 强制反思 `systemPrompt` 段 + `agent/pre-step` 相关性被动注入 |
 | `@deepseek-ai/dsh-self-reference-policy` | `tools/pre-execute` L1/L2/L3 分级 |
 | `@deepseek-ai/dsh-tool-memory` | 模型工具 `memory_query` |
 | `@deepseek-ai/dsh-offline-reflector` | 定时根因分析 → 补丁建议 |
@@ -98,7 +101,7 @@
 ## 五、验证状态
 
 - 全仓 Host 聚合类型检查（`tsc -b tsconfig.host.json`）：exit 0
-- 单元测试：26 passed（8 files）
+- 单元测试：46 passed（12 files）
 - 真实 DeepSeek API 端到端：蒸馏落库、教训注入、L2 影子预检 fail-closed
 
 ## 六、License

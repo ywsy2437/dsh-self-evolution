@@ -8,10 +8,12 @@
 
 - `recordFingerprint(input)` —— 把新矛盾折叠进指纹，返回存储后的指纹。
 - `queryRecentContradictions(limit, minSeverity)` —— 按严重度阈值取最近指纹，最新在前。
+- `queryRelevantContradictions(query, limit, minSeverity)` —— 取与 `query` 至少共享一个 token 的指纹，按关键词重叠度、再按新近排序；被动检索入口。
 - `queryUnsolvedContradictions(minSeverity, limit)` —— 取未解决指纹（供离线反思）。
 - `markResolved(id, resolvedBy)` —— 把指纹标记为已由某补丁解决。
 - `record(input)` / `listRecords()` —— 通用元记忆记录（影子失败、补丁、补丁失败）。
 - `mountStore(store)` —— 换入持久 `MemoryStore`；返回的 disposer 恢复上一个 store。
+- `tokenize(text)` / `relevanceScore(query, text)` —— 共享的 token 重叠分词与打分，主动/被动消费方据此一致排序。
 
 读取是同步的，因为主要消费方是 `systemPrompt` 段 provider。
 

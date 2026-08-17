@@ -8,10 +8,12 @@ Meta-memory hub (`ctx.memory`) for the self-evolution capability: a contradictio
 
 - `recordFingerprint(input)` — fold a new contradiction into its fingerprint, returning the stored fingerprint.
 - `queryRecentContradictions(limit, minSeverity)` — recent fingerprints at or above a severity, most recent first.
+- `queryRelevantContradictions(query, limit, minSeverity)` — fingerprints sharing at least one token with `query`, ranked by keyword overlap then recency; the passive retrieval entrypoint.
 - `queryUnsolvedContradictions(minSeverity, limit)` — unresolved fingerprints for offline reflection.
 - `markResolved(id, resolvedBy)` — mark a fingerprint resolved by a patch.
 - `record(input)` / `listRecords()` — generic meta-memory records (shadow failures, patches, patch failures).
 - `mountStore(store)` — swap in a durable `MemoryStore`; the returned disposer restores the previous store.
+- `tokenize(text)` / `relevanceScore(query, text)` — shared token-overlap lexing and scoring, exported so active and passive consumers rank consistently.
 
 Reads are synchronous because the primary consumer is a `systemPrompt` section provider.
 

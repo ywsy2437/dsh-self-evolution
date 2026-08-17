@@ -15,9 +15,10 @@ export const name = 'lesson-injector-invariant'
 export const inject = ['invariants']
 
 /**
- * No runtime invariant: the injector owns a pure projection (memory fingerprints
- * → prompt section text) with no event stream or mutable medium of its own to
- * cross-check; the memory service already owns the source data's consistency.
+ * No runtime invariant: the injector owns pure read-side projections (memory
+ * fingerprints → prompt-section text and → pre-step context messages) with no
+ * event stream or mutable medium of its own to cross-check; the memory service
+ * already owns the source data's consistency.
  */
 const install: InvariantInstaller = () => {}
 
