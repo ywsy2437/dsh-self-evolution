@@ -19,10 +19,11 @@
 - **记住失败**：自修改失败不再静默回滚，而是被蒸馏成一条自然语言"因果教训"。
 - **带着伤疤反思**：教训强制注入后续推理的 SystemPrompt，让 Agent 带着"痛感"重新规划。
 - **被动激活（相关记忆注入）**：不依赖模型主动调用 `memory_query`——`agent/pre-step` 钩子在每次推理推进前按相关性把相关教训被动前置注入，与「强制反思段」形成「常驻近因 + 即时相关」的双层记忆读取。
+- **心跳与慢思考**：每 5 秒心跳一次（轻量节拍），按冷却阈值按需触发 `max` 深度思考，产生思考/进化/写作/聊天/灵感等"想法"并落库。
 - **影子预检**：高风险（L2）自修改先在隔离 fork 子代理里预演，失败即 fail-closed。
 - **离线固化**：空闲时批量根因分析，把伤疤固化为可复用的补丁建议。
 
-## 二、包结构（9 个插件）
+## 二、包结构（10 个插件）
 
 | 包 | 角色 |
 |---|---|
@@ -35,6 +36,7 @@
 | `@deepseek-ai/dsh-offline-reflector` | 定时根因分析 → 补丁建议 |
 | `@deepseek-ai/dsh-shadow-tester` | `ctx.shadowTester`：fork 隔离预检 |
 | `@deepseek-ai/dsh-task-evaluator` | 任务级三态 evaluator（`turn/end` → success/failure/inconclusive） |
+| `@deepseek-ai/dsh-heartbeat` | 心跳节拍 + `max` 慢思考想法生成，落库并发布 `heartbeat/idea` |
 
 ## 三、快速开始
 

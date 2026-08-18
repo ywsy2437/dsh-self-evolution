@@ -12,9 +12,9 @@ contradiction → reversible rollback → semantic distillation → lesson injec
 
 Lessons reach the model two passive ways: a recency-ranked `systemPrompt` section, plus a relevance-ranked `agent/pre-step` hook that prepends task-specific lessons before each proceeding step — no opt-in tool call required.
 
-## Packages (9)
+## Packages (10)
 
-`memory`, `memory-sqlite`, `contradiction-semanticizer`, `lesson-injector`, `self-reference-policy`, `tool-memory`, `offline-reflector`, `shadow-tester`, `task-evaluator`.
+`memory`, `memory-sqlite`, `contradiction-semanticizer`, `lesson-injector`, `self-reference-policy`, `tool-memory`, `offline-reflector`, `shadow-tester`, `task-evaluator`, `heartbeat`.
 
 ## Docs
 
