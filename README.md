@@ -18,8 +18,14 @@ Lessons reach the model two passive ways: a recency-ranked `systemPrompt` sectio
 
 ## Docs
 
+- [Development report (formal)](docs/DEVELOPMENT-REPORT.zh.md)
 - [Research notes (prior art → evolution roadmap)](docs/RESEARCH.zh.md)
 - [Architecture](docs/ARCHITECTURE.zh.md)
+- [Evolution benchmark (lesson-injection A/B)](bench/README.md)
+
+## Authors
+
+小S (Shan Yu) & 小D (DeepSeek)
 
 ## License
 

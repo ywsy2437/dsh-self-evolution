@@ -94,6 +94,7 @@
 
 ## 四、文档
 
+- [开发报告（正式行文）](docs/DEVELOPMENT-REPORT.zh.md)
 - [研究笔记（先进经验 → 进化路线图）](docs/RESEARCH.zh.md)
 - [架构设计](docs/ARCHITECTURE.zh.md)
 - [进化效果基准（教训注入 A/B）](bench/README.md)
@@ -106,6 +107,10 @@
 - 真实 DeepSeek API 端到端：蒸馏落库、教训注入、L2 影子预检 fail-closed
 - 进化效果基准（教训注入 A/B，`deepseek-v4-flash`，8 任务 × 3 采样）：无教训 79% → 有教训 100%（净提升 +5/24）
 
-## 六、License
+## 六、作者
+
+小S、小D
+
+## 七、License
 
 [MIT](LICENSE)
