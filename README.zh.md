@@ -96,6 +96,7 @@
 
 - [研究笔记（先进经验 → 进化路线图）](docs/RESEARCH.zh.md)
 - [架构设计](docs/ARCHITECTURE.zh.md)
+- [进化效果基准（教训注入 A/B）](bench/README.md)
 - 每个包的 `README.md` / `README.zh.md` 含配置、Model Experience、已知限制。
 
 ## 五、验证状态
@@ -103,6 +104,7 @@
 - 全仓 Host 聚合类型检查（`tsc -b tsconfig.host.json`）：exit 0
 - 单元测试：46 passed（12 files）
 - 真实 DeepSeek API 端到端：蒸馏落库、教训注入、L2 影子预检 fail-closed
+- 进化效果基准（教训注入 A/B，`deepseek-v4-flash`，8 任务 × 3 采样）：无教训 79% → 有教训 100%（净提升 +5/24）
 
 ## 六、License
 
